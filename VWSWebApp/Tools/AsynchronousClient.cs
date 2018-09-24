@@ -139,6 +139,56 @@ namespace VWSWebApp.Tools
             }
         }
 
+        public static string StatusClient(List<Socket> sockets)
+        {
+            int sConnected = 0;
+            int sDisconnected = 0;
+            foreach (var socket in sockets)
+            {
+                if (IsSocketConnected(socket))
+                {
+                    sConnected++;
+                }
+                else
+                {
+                    sDisconnected++;
+                }
+            }
+            return "Connected Sockets: " + sConnected + " Disconnected Sockets: " + sDisconnected;
+        }
+
+        public static void ReconnectClient(List<Socket> sockets)
+        {
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(GlobalVariables.cmd.Host);
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, GlobalVariables.cmd.Port);
+
+            foreach (var socket in sockets.ToList())
+            {
+                if (!IsSocketConnected(socket))
+                {
+                    socket.Dispose();
+                    sockets.Remove(socket);
+                    // Create a TCP/IP socket.  
+                    Socket client = new Socket(ipAddress.AddressFamily,
+                        SocketType.Stream, ProtocolType.Tcp);
+
+                    // Connect to the remote endpoint.  
+                    client.BeginConnect(remoteEP,
+                        new AsyncCallback(ConnectCallback), client);
+                    connectDone.WaitOne();
+                    sockets.Add(client);
+                }
+            }
+        }
+
+
+
+        private static bool IsSocketConnected(Socket s)
+        {
+            return !((s.Poll(1000, SelectMode.SelectRead) && (s.Available == 0)) || !s.Connected);
+        }
+
         private static void ConnectCallback(IAsyncResult ar)
         {
             try
