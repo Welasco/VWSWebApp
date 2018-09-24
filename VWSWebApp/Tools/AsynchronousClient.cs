@@ -6,6 +6,7 @@ using System.Web;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using VWSWebApp.Models;
 
 namespace VWSWebApp.Tools
 {
@@ -45,7 +46,7 @@ namespace VWSWebApp.Tools
         // The response from the remote device.  
         private static String response = String.Empty;
 
-        public static List<Socket> StartClient(string server, int port, int connections)
+        public static List<Socket> StartClient(Socketcmd cmd)
         {
             // Connect to a remote device.  
             try
@@ -54,13 +55,13 @@ namespace VWSWebApp.Tools
                 // The name of the   
                 // remote device is "host.contoso.com".  
                 //IPHostEntry ipHostInfo = Dns.GetHostEntry("host.contoso.com");
-                IPHostEntry ipHostInfo = Dns.GetHostEntry(server);
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(cmd.Host);
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, cmd.Port);
 
                 List<Socket> sockets = new List<Socket>();
 
-                for (int i = 0; i < connections; i++)
+                for (int i = 0; i < cmd.Connections; i++)
                 {
                     // Create a TCP/IP socket.  
                     Socket client = new Socket(ipAddress.AddressFamily,
@@ -139,8 +140,10 @@ namespace VWSWebApp.Tools
             }
         }
 
-        public static string StatusClient(List<Socket> sockets)
+        public static Socketstatus StatusClient(List<Socket> sockets)
         {
+            Socketstatus socketstatus = new Socketstatus();
+            
             int sConnected = 0;
             int sDisconnected = 0;
             foreach (var socket in sockets)
@@ -154,7 +157,12 @@ namespace VWSWebApp.Tools
                     sDisconnected++;
                 }
             }
-            return "Connected Sockets: " + sConnected + " Disconnected Sockets: " + sDisconnected;
+
+            socketstatus.OpenSockets = sConnected;
+            socketstatus.ClosedSockets = sDisconnected;
+
+            //return "Connected Sockets: " + sConnected + " Disconnected Sockets: " + sDisconnected;
+            return socketstatus;
         }
 
         public static void ReconnectClient(List<Socket> sockets)

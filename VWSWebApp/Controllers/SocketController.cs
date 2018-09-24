@@ -29,7 +29,8 @@ namespace VWSWebApp.Controllers
         
         public HttpResponseMessage GetSocket()
         {
-            HttpResponseMessage response;
+            //HttpResponseMessage response;
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
             try
             {
                 
@@ -37,11 +38,44 @@ namespace VWSWebApp.Controllers
                 {
                     response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""No connections opened!}");
                 }
-                else //if (GlobalVariables.GlobalSocketList.Count != 0)
+                else
                 {
-                    response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""There are " + GlobalVariables.GlobalSocketList.Count + @" connections opened."", ""ConnectionsReport"": """ + AsynchronousClient.StatusClient(GlobalVariables.GlobalSocketList) +  @"""}"); // + AsynchronousClient.StatusClient + 
+
+                    //string currentStatus= "Connected Sockets: " + GlobalVariables.socketstatus.OpenSockets + " Disconnected Sockets: " + GlobalVariables.socketstatus.ClosedSockets;
+                    //var socketstatus = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
+                    //response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""There are " + GlobalVariables.GlobalSocketList.Count + @" connections opened."", ""ConnectionsReport"": """ + currentStatus +  @"""}");
+
+                    var socketstatus = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
+                    response.Content = new StringContent(socketstatus, System.Text.Encoding.UTF8, "application/json");
+                    response.StatusCode = HttpStatusCode.OK;
                 }
-                //response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""There are " + GlobalVariables.GlobalSocketList.Count + @" connections opened.""}");
+            }
+            catch (Exception)
+            {
+                response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""There are no connections opened!""}");
+                return response;
+            }
+            return response;
+        }
+
+        [Route("api/Socket/GetTest")]
+
+        public HttpResponseMessage GetTest()
+        {
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            try
+            {
+                if (GlobalVariables.GlobalSocketList.Count == 0)
+                {
+                    response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""No connections opened!}");
+                }
+                else
+                {
+
+                    var socketstatus = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
+                    response.Content = new StringContent(socketstatus, System.Text.Encoding.UTF8, "application/json");
+                    response.StatusCode = HttpStatusCode.OK;
+                }
             }
             catch (Exception)
             {
@@ -50,31 +84,54 @@ namespace VWSWebApp.Controllers
                 return response;
             }
             return response;
-
         }
+
         [HttpGet]
         public HttpResponseMessage ReconnectSocket()
         {
-            HttpResponseMessage response;
+            //HttpResponseMessage response;
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 
             if (GlobalVariables.GlobalSocketList.Count > 0)
             {
                 try
                 {
-                    string sBefore = AsynchronousClient.StatusClient(GlobalVariables.GlobalSocketList);
+                    int openBefore = GlobalVariables.socketstatus.OpenSockets;
+                    int closedBefore = GlobalVariables.socketstatus.ClosedSockets;
+                    string statusBefore = "Connected Sockets: " + openBefore + " Disconnected Sockets: " + closedBefore;
                     AsynchronousClient.ReconnectClient(GlobalVariables.GlobalSocketList);
-                    string sAfter = AsynchronousClient.StatusClient(GlobalVariables.GlobalSocketList);
-                    response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Reconnecting Sockets!"", ""ConnectionStatusBeforeReconnect:"" """ + sBefore + @", ""ConnectionStatusAfterReconnect: "" """ + sAfter + @"""}");
+                    int openAfter = GlobalVariables.socketstatus.OpenSockets;
+                    int closedAfter = GlobalVariables.socketstatus.ClosedSockets;
+                    string statusAfter = "Connected Sockets: " + openAfter + " Disconnected Sockets: " + closedAfter;
+                    string statusall = @"{
+                                            ""Status"": ""Reconnecting Sockets!"",
+                                            ""ConnectionStatusBeforeReconnect"": {
+                                                ""Connected"": " + openBefore + @",
+                                                ""Disconnected"": " + closedBefore + @"
+                                            },
+                                            ""ConnectionStatusAfterReconnect"": {
+                                                ""Connected"": " + openAfter + @",
+                                                ""Disconnected"": " + closedAfter + @"
+                                            }
+                                        }";
 
+                    response = Request.CreateResponse(HttpStatusCode.OK, statusall);
+
+                    //var socketstatusbefore = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
+                    //AsynchronousClient.ReconnectClient(GlobalVariables.GlobalSocketList);
+                    //var socketstatusafter = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
+                    //var strStatus = socketstatusbefore + socketstatusafter;
+                    ////var strStatus = @"{""ConnectionStatusBeforeReconnect:"" """ + socketstatusbefore + @", ""ConnectionStatusAfterReconnect: "" """ + socketstatusafter + @"""}";
+                    //response.Content = new StringContent(strStatus, System.Text.Encoding.UTF8, "application/json");
+                    //response.StatusCode = HttpStatusCode.OK;
                 }
                 catch (Exception e)
                 {
-
                     response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Failed to Reconnect Sockets!"", ""ExceptionMessage"": """ + e.Message + @"""}");
                     return response;
                 }
             }
-            else //if (GlobalVariables.GlobalSocketList.Count != 0)
+            else
             {
                 response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Sockets not found. Please create a socket first!""}");
             }
@@ -140,13 +197,14 @@ namespace VWSWebApp.Controllers
                     }
                     else
                     {
-                        GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(GlobalVariables.cmd.Host, GlobalVariables.cmd.Port, GlobalVariables.cmd.Connections);
+                        GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(GlobalVariables.cmd);
+                        //GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(GlobalVariables.cmd.Host, GlobalVariables.cmd.Port, GlobalVariables.cmd.Connections);
                         response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Requests created " + GlobalVariables.GlobalSocketList.Count + @" number of connections.""}");
                     }
                 }
                 else
                 {
-                    GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(GlobalVariables.cmd.Host, GlobalVariables.cmd.Port, GlobalVariables.cmd.Connections);
+                    GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(GlobalVariables.cmd);
                     response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Requests created " + GlobalVariables.GlobalSocketList.Count + @" number of connections.""}");
                 }
 

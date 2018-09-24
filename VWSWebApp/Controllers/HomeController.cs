@@ -72,12 +72,7 @@ namespace VWSWebApp.Controllers
         public ActionResult SNatPortExhaustion()
         {
             ViewBag.Message = "Inicio";
-            GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient("www.google.com", 80, 20);
-            ViewBag.Amount = GlobalVariables.GlobalSocketList.Count;
-            Thread.Sleep(20 * 1000);
-            AsynchronousClient.StopClient(GlobalVariables.GlobalSocketList);
-            GlobalVariables.GlobalSocketList.Clear();
-            ViewBag.Amount2 = GlobalVariables.GlobalSocketList.Count;
+
             ViewBag.Message2 = "Fim";
 
             return View();

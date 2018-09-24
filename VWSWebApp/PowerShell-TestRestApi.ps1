@@ -22,6 +22,7 @@ Invoke-RestMethod -Uri http://localhost:54985/api/Socket/ReconnectSocket -Method
 Invoke-RestMethod -Uri http://localhost:54985/api/Socket/Stop -Method Get -ContentType "application/json"
 Invoke-RestMethod -Uri http://localhost:54985/api/Socket/GetNames -Method Get -ContentType "application/json"
 
+Invoke-RestMethod -Uri http://localhost:54985/api/Socket/GetTest -Method Get -ContentType "application/json"
 
 Invoke-RestMethod -Uri http://localhost:54985/api/Socket -Method Get -ContentType "application/json"
 

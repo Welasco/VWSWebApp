@@ -42,13 +42,13 @@ namespace VWSWebApp.Controllers
                     }
                     else
                     {
-                        GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(socketcmd.Host, socketcmd.Port, socketcmd.Connections);
+                        GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(socketcmd);
                         response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Requests created " + GlobalVariables.GlobalSocketList.Count + @" number of connections.""}");
                     }
                 }
                 else
                 {
-                    GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(socketcmd.Host, socketcmd.Port, socketcmd.Connections);
+                    GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(socketcmd);
                     response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Requests created " + GlobalVariables.GlobalSocketList.Count + @" number of connections.""}");
                 }
 
