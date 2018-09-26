@@ -36,7 +36,7 @@ namespace VWSWebApp.Controllers
                 
                 if (GlobalVariables.GlobalSocketList.Count == 0)
                 {
-                    response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""No connections opened!}");
+                    response = SocketHelper.SocketHelperConnectionNotFoundOrDisconnected();
                 }
                 else
                 {
@@ -45,17 +45,27 @@ namespace VWSWebApp.Controllers
                     //var socketstatus = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
                     //response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""There are " + GlobalVariables.GlobalSocketList.Count + @" connections opened."", ""ConnectionsReport"": """ + currentStatus +  @"""}");
 
-                    var socketstatus = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
-                    response.Content = new StringContent(socketstatus, System.Text.Encoding.UTF8, "application/json");
-                    response.StatusCode = HttpStatusCode.OK;
+                    //var socketstatus = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
+                    //response.Content = new StringContent(socketstatus, System.Text.Encoding.UTF8, "application/json");
+                    //response.StatusCode = HttpStatusCode.OK;
+                    return SocketHelper.SocketHelperConnectionStatus();
                 }
             }
             catch (Exception)
             {
-                response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""There are no connections opened!""}");
-                return response;
+                //Socketstatus sStatus = new Socketstatus();
+                //sStatus.ClosedSockets = 0;
+                //sStatus.OpenSockets = 0;
+                //sStatus.ConnectionStatus = SocketStatus.Disconnected;
+
+                //var socketstatus = JsonConvert.SerializeObject(sStatus, Formatting.Indented);
+                //response.Content = new StringContent(socketstatus, System.Text.Encoding.UTF8, "application/json");
+                //response.StatusCode = HttpStatusCode.OK;
+                return SocketHelper.SocketHelperConnectionNotFoundOrDisconnected();
+                //response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""There are no connections opened!""}");
+                //return response;
             }
-            return response;
+            return SocketHelper.SocketHelperConnectionNotFoundOrDisconnected();
         }
 
         [Route("api/Socket/GetTest")]
@@ -92,67 +102,48 @@ namespace VWSWebApp.Controllers
             //HttpResponseMessage response;
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 
-            if (GlobalVariables.GlobalSocketList.Count > 0)
+            try
             {
-                try
+                if (GlobalVariables.GlobalSocketList.Count > 0)
                 {
-                    int openBefore = GlobalVariables.socketstatus.OpenSockets;
-                    int closedBefore = GlobalVariables.socketstatus.ClosedSockets;
-                    string statusBefore = "Connected Sockets: " + openBefore + " Disconnected Sockets: " + closedBefore;
                     AsynchronousClient.ReconnectClient(GlobalVariables.GlobalSocketList);
-                    int openAfter = GlobalVariables.socketstatus.OpenSockets;
-                    int closedAfter = GlobalVariables.socketstatus.ClosedSockets;
-                    string statusAfter = "Connected Sockets: " + openAfter + " Disconnected Sockets: " + closedAfter;
-                    string statusall = @"{
-                                            ""Status"": ""Reconnecting Sockets!"",
-                                            ""ConnectionStatusBeforeReconnect"": {
-                                                ""Connected"": " + openBefore + @",
-                                                ""Disconnected"": " + closedBefore + @"
-                                            },
-                                            ""ConnectionStatusAfterReconnect"": {
-                                                ""Connected"": " + openAfter + @",
-                                                ""Disconnected"": " + closedAfter + @"
-                                            }
-                                        }";
-
-                    response = Request.CreateResponse(HttpStatusCode.OK, statusall);
-
-                    //var socketstatusbefore = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
-                    //AsynchronousClient.ReconnectClient(GlobalVariables.GlobalSocketList);
-                    //var socketstatusafter = JsonConvert.SerializeObject(GlobalVariables.socketstatus, Formatting.Indented);
-                    //var strStatus = socketstatusbefore + socketstatusafter;
-                    ////var strStatus = @"{""ConnectionStatusBeforeReconnect:"" """ + socketstatusbefore + @", ""ConnectionStatusAfterReconnect: "" """ + socketstatusafter + @"""}";
-                    //response.Content = new StringContent(strStatus, System.Text.Encoding.UTF8, "application/json");
-                    //response.StatusCode = HttpStatusCode.OK;
+                    return SocketHelper.SocketHelperConnectionStatus();
                 }
-                catch (Exception e)
+                else
                 {
-                    response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Failed to Reconnect Sockets!"", ""ExceptionMessage"": """ + e.Message + @"""}");
-                    return response;
+                    return SocketHelper.SocketHelperConnectionStatus();
                 }
+                //int openBefore = GlobalVariables.socketstatus.OpenSockets;
+                //int closedBefore = GlobalVariables.socketstatus.ClosedSockets;
+                //string statusBefore = "Connected Sockets: " + openBefore + " Disconnected Sockets: " + closedBefore;
+                //AsynchronousClient.ReconnectClient(GlobalVariables.GlobalSocketList);
+                //int openAfter = GlobalVariables.socketstatus.OpenSockets;
+                //int closedAfter = GlobalVariables.socketstatus.ClosedSockets;
+                //string statusAfter = "Connected Sockets: " + openAfter + " Disconnected Sockets: " + closedAfter;
+                //string statusall = @"{
+                //                        ""Status"": ""Reconnecting Sockets!"",
+                //                        ""ConnectionStatusBeforeReconnect"": {
+                //                            ""Connected"": " + openBefore + @",
+                //                            ""Disconnected"": " + closedBefore + @"
+                //                        },
+                //                        ""ConnectionStatusAfterReconnect"": {
+                //                            ""Connected"": " + openAfter + @",
+                //                            ""Disconnected"": " + closedAfter + @"
+                //                        }
+                //                    }";
+
+                //response = Request.CreateResponse(HttpStatusCode.OK, statusall);
             }
-            else
+            catch (Exception e)
             {
-                response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Sockets not found. Please create a socket first!""}");
+                response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Failed to Reconnect Sockets!"", ""ExceptionMessage"": """ + e.Message + @"""}");
+                return response;
             }
-
-            //try
-            //{
-            //    string sBefore = AsynchronousClient.StatusClient(GlobalVariables.GlobalSocketList);
-            //    AsynchronousClient.ReconnectClient(GlobalVariables.GlobalSocketList);
-            //    string sAfter = AsynchronousClient.StatusClient(GlobalVariables.GlobalSocketList);
-            //    response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Reconnecting Sockets!"", ""ConnectionStatusBeforeReconnect:"" """ + sBefore + @", ""ConnectionStatusAfterReconnect: "" """ + sAfter + @"""}");
-
-            //}
-            //catch (Exception e)
-            //{
-
-            //    response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Failed to Reconnect Sockets!"", ""ExceptionMessage"": """ + e.Message + @"""}");
-            //    return response;
-            //}
             return response;
-
         }
+            
+
+        
 
         //[Route("api/Socket/StopAll")]
         //[Route("api/Socket/Stop")]
@@ -162,15 +153,24 @@ namespace VWSWebApp.Controllers
             HttpResponseMessage response;
             try
             {
-                AsynchronousClient.StopClient(GlobalVariables.GlobalSocketList);
-                response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""All connections was stoped:" + GlobalVariables.GlobalSocketList.Count + @"""}");
-                GlobalVariables.GlobalSocketList.Clear();
-                GlobalVariables.cmd = null;
+                if (GlobalVariables.GlobalSocketList.Count > 0)
+                {
+                    AsynchronousClient.StopClient(GlobalVariables.GlobalSocketList);
+                    //response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""All connections was stoped:" + GlobalVariables.GlobalSocketList.Count + @"""}");
+                    GlobalVariables.GlobalSocketList.Clear();
+                    GlobalVariables.cmd = null;
+                    response = SocketHelper.SocketHelperConnectionStatus();
+                }
+                else
+                {
+                    return SocketHelper.SocketHelperConnectionStatus();
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""No existing connection. Please create a connection first.""}");
-                return response;
+                //response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""No existing connection. Please create a connection first.""}");
+                //return response;
+                return SocketHelper.SocketHelperConnectionNotFoundOrDisconnected();
             }
             return response;
         }
@@ -191,7 +191,8 @@ namespace VWSWebApp.Controllers
                 {
                     if (GlobalVariables.GlobalSocketList.Count > 0)
                     {
-                        response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""There are " + GlobalVariables.GlobalSocketList.Count + @" connections running. Please stop the current connections to create more connections.""}");
+                        //response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""There are " + GlobalVariables.GlobalSocketList.Count + @" connections running. Please stop the current connections to create more connections.""}");
+                        return SocketHelper.SocketHelperConnectionStatus();
                         //@"{""Status"": ""There are " + GlobalVariables.GlobalSocketList.Count + @" connections opened.""}"
 
                     }
@@ -199,19 +200,21 @@ namespace VWSWebApp.Controllers
                     {
                         GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(GlobalVariables.cmd);
                         //GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(GlobalVariables.cmd.Host, GlobalVariables.cmd.Port, GlobalVariables.cmd.Connections);
-                        response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Requests created " + GlobalVariables.GlobalSocketList.Count + @" number of connections.""}");
+                        //response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Requests created " + GlobalVariables.GlobalSocketList.Count + @" number of connections.""}");
+                        return SocketHelper.SocketHelperConnectionStatus();
                     }
                 }
                 else
                 {
                     GlobalVariables.GlobalSocketList = AsynchronousClient.StartClient(GlobalVariables.cmd);
-                    response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Requests created " + GlobalVariables.GlobalSocketList.Count + @" number of connections.""}");
+                    //response = Request.CreateResponse(HttpStatusCode.OK, @"{""Status"": ""Requests created " + GlobalVariables.GlobalSocketList.Count + @" number of connections.""}");
+                    return SocketHelper.SocketHelperConnectionStatus();
                 }
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to DeserializeObject" + data);
+                response = Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to DeserializeObject" + data + "\r\n Exception: " + e.Message);
                 return response;
             }
             return response;

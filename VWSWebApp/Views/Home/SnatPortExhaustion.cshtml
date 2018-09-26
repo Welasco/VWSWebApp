@@ -73,6 +73,13 @@ Depois do IF
     varhtmlrunning += "<button type=\"button\" id=\"refresh\" onclick=\"refresh()\">Refresh</button>"
     //var formdata = $("#formdata").serialize();
     var childprocessID = '<%= childprocessID %>';
+
+    var getcurrentstatus = apicall('GET');
+    console.log("Response of getcurrentstatus: " + getcurrentstatus);
+    var socketstatus = JSON.parse(response);
+    console.log("ResponseJSON OpenSockets: " + socketstatus.OpenSockets);
+    var opensockets = socketstatus.OpenSockets;
+    var closedsockets = socketstatus.ClosedSockets
     if (childprocessID != null && childprocessID != "") {
         $("#run").val('Stop');
         //document.write(varhtmlrunning);
@@ -84,7 +91,7 @@ Depois do IF
     }
     //alert(childprocessID);
     var currentURL = window.location.hostname + ":" + window.location.port;
-    var purl = "http://" + currentURL + "/api/tcpportexhaustion";
+    var purl = "http://" + currentURL + "/api/Socket";
     $('#run').click(function (e) {
         e.preventDefault();
         var data = {};
