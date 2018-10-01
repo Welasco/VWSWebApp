@@ -176,7 +176,7 @@ namespace VWSWebApp.Tools
             {
                 if (!IsSocketConnected(socket))
                 {
-                    socket.Dispose();
+                    //socket.Dispose();
                     sockets.Remove(socket);
                     // Create a TCP/IP socket.  
                     Socket client = new Socket(ipAddress.AddressFamily,
