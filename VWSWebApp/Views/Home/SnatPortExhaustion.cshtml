@@ -81,7 +81,7 @@
 
     var currentStatus = apicall('GET', '', '/api/Socket');
     var currentStatusJSON = jsonParse(currentStatus);
-    if (currentStatusJSON.ConnectionStatus == "Connected") {
+    if (currentStatusJSON.ConnectionStatus == "Connected" || currentStatusJSON.ClosedSockets > 0) {
         $("#run").val('Stop');
         var varhtml = genHTML(currentStatus);
         $('#divRefresh').html(varhtml);
