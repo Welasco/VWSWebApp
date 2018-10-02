@@ -1,165 +1,130 @@
 ﻿@{
-    ViewBag.Title = "SNatPortExhaustion";
+    ViewBag.Title = "SNAT Port Exhaustion";
 }
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
-<h3>@ViewBag.Message2</h3>
-
-
-<p>Use this area to provide additional information.</p>
-
-Antes do IF
-@if (VWSWebApp.Tools.GlobalVariables.cmd != null)
-{
-    <text>
-    Host: @VWSWebApp.Tools.GlobalVariables.cmd.Host.ToString()
-    <br>Port: @VWSWebApp.Tools.GlobalVariables.cmd.Port.ToString()
-    <br>Connections: @VWSWebApp.Tools.GlobalVariables.cmd.Connections.ToString()
-    </text>
-}
-Depois do IF
+<h2>@ViewBag.Title</h2>
 
 <br>
-<form name="form" action="#" id="formdata" method="POST">
-    Target: <input type="text" id="target" name="target" value="www.google.com" /><br />
-    Port: <input type="number" id="port" name="port" value="80" /><br />
-    Number of Connections: <input type="number" id="connections" name="connections" value="30" /><br />
-    <input type="submit" id="run" value="Run" />
+
+<form name="form" action="#" id="formdata" method="POST" class="well span9">
+    <div class="row">
+        <div class="span3 col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="form-group">
+                <label>Target:</label>  <input type="text" id="target" name="target" value="www.google.com" class="form-control span3 text-center" /><br>
+                <label>Port:</label>  <input type="number" id="port" name="port" value="80" min="1" max="65535" class="form-control span3 text-center" /><br>
+                <label>Connections:</label>  <input type="number" id="connections" name="connections" value="30" min="1" max="65535" class="form-control span3 text-center" />
+            </div>
+            <br><br>
+            <div id="divRefresh"></div>
+            <br>
+            <input type="submit" id="run" value="Run" class="btn btn-primary btn-default" />
+            <input type="submit" id="GetStatus" value="Status" class="btn btn-primary btn-default" />
+            <input type="submit" id="Reconnect" value="Reconnect" class="btn btn-primary btn-default" />
+            </div>
+    </div>
 </form>
 <br>
-<div id="divRefresh"></div>
+
 <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
-    function apicall(type, data) {
+    function apicall(type, data, apiurl) {
         var response = null;
-        if (type == 'POST') {
-            $.ajax({
-                type: 'POST',
-                data: JSON.stringify(data),
-                //data: data,
-                contentType: 'application/json',
-                url: purl,
-                success: function () {/*alert("Sucess!");console.log(data);*/ },
-                error: function () { alert("Error!"); }
-            });
-        }
+        var currentURL = window.location.hostname + ":" + window.location.port;
+        var protocol = location.protocol;
+        var apiurl = protocol + "//" + currentURL + apiurl;
+
         if (type == 'GET') {
             response = $.ajax({
                 type: 'GET',
                 async: false,
-                //data: JSON.stringify(data),
-                //data: dataget,
                 contentType: 'application/json',
-                url: purl,
-                //success: function(dataget,data){alert(dataget);console.log(dataget);},
-                /*
-                success: function(res){
-                    alert("Success: " + res);
+                url: apiurl
+            });
+            //console.log("Aresult: " + response.responseText);
+            return response.responseText;
+        }
+        if (type == 'POST') {
+            response = $.ajax({
+                type: 'POST',
+                data: JSON.stringify(data),
+                async: false,
+                contentType: 'application/json',
+                url: apiurl,
+                
+                success: function (res) {
                     console.log("DataGet: " + res.responseText);
+
                     response = res;
                 },
-                */
-                //sucess: data,
-                //error: function(){alert("Error!");}
+                error: function () { alert("Error!"); }
+                
             });
-            console.log("Aresult: " + response.responseText);
+            //console.log("POST Response: " + response.responseText);
             return response.responseText;
         }
     }
-    var varhtmlrunning = "PID: " + '<%= childprocessID %><br>';
-    varhtmlrunning += "NetstatCount: " + '<%= netstatcount %><br>';
-    varhtmlrunning += "Server Date: " + '<%= serverdate %><br>';
-    //varhtmlrunning += "<input type=\"submit\" id=\"refresh\" value=\"Refresh\"/>";
-    varhtmlrunning += "<button type=\"button\" id=\"refresh\" onclick=\"refresh()\">Refresh</button>"
-    //var formdata = $("#formdata").serialize();
-    var childprocessID = '<%= childprocessID %>';
 
-    var getcurrentstatus = apicall('GET');
-    console.log("Response of getcurrentstatus: " + getcurrentstatus);
-    var socketstatus = JSON.parse(response);
-    console.log("ResponseJSON OpenSockets: " + socketstatus.OpenSockets);
-    var opensockets = socketstatus.OpenSockets;
-    var closedsockets = socketstatus.ClosedSockets
-    if (childprocessID != null && childprocessID != "") {
+    function jsonParse(data) {
+        var dataJSON = JSON.parse(data);
+        return dataJSON;
+    }
+
+    function genHTML(genhtml) {
+        var genhtmlJson = jsonParse(genhtml);
+        var varhtml = "OpenSockets: " + genhtmlJson.OpenSockets + '<br>';
+        varhtml += "ClosedSockets: " + genhtmlJson.ClosedSockets + '<br>';
+        varhtml += "ConnectionStatus: " + genhtmlJson.ConnectionStatus + '<br>';
+        varhtml += "ServerDateTime: " + genhtmlJson.ServerDateTime + '<br>';
+        return varhtml;
+    }
+
+
+
+    var currentStatus = apicall('GET', '', '/api/Socket');
+    var currentStatusJSON = jsonParse(currentStatus);
+    if (currentStatusJSON.ConnectionStatus == "Connected") {
         $("#run").val('Stop');
-        //document.write(varhtmlrunning);
-        $('#divRefresh').html(varhtmlrunning);
+        var varhtml = genHTML(currentStatus);
+        $('#divRefresh').html(varhtml);
     }
-    else {
-        $("#run").val('Run');
-        $('#divRefresh').html('');
-    }
-    //alert(childprocessID);
-    var currentURL = window.location.hostname + ":" + window.location.port;
-    var purl = "http://" + currentURL + "/api/Socket";
+
     $('#run').click(function (e) {
         e.preventDefault();
         var data = {};
-        data.target = $('#target').val();
-        data.port = $("#port").val();
-        data.connections = $("#connections").val();
+        data.Host = $('#target').val();
+        data.Port = $("#port").val();
+        data.Connections = $("#connections").val();
         data.status = $("#run").val();
-        console.log("Log Target: " + data.target);
-        console.log("Log Port: " + data.port);
-        console.log("Log Connections: " + data.connections);
-        console.log("Log Button: " + data.button);
 
-        //console.log("FormData: " + formdata);
-        //alert(data.user);
         if (data.status == 'Run') {
             $("#run").val('Stop');
-            $('#divRefresh').html(varhtmlrunning);
+            var rRun = apicall('POST', data, '/api/Socket/Start');
+            console.log(rRun);
+            var varhtml = genHTML(rRun);
+            $('#divRefresh').html(varhtml);
         }
         else if (data.status == 'Stop') {
             $("#run").val('Run');
-            $('#divRefresh').html('');
+            var rStop = apicall('GET', '', '/api/Socket/Stop');
+            var varhtml = genHTML(rStop);
+            $('#divRefresh').html(varhtml);
         }
-        apicall('POST', data)
-        /*
-        $.ajax({
-                type: 'POST',
-                data: JSON.stringify(data),
-                //data: data,
-                contentType: 'application/json',
-                url: purl,
-                success: function(){alert("Sucess!");console.log(data);},
-                error: function(){alert("Error!");}
-        });
-        */
     });
 
-    /*
-    $('#refresh').on('click',function(e){
+    $('#GetStatus').click(function (e) {
         e.preventDefault();
+        var rGetStatus = apicall('GET','','/api/Socket');
+        console.log("rGetStatus: " + rGetStatus);
+        var varhtml = genHTML(rGetStatus);
+        $('#divRefresh').html(varhtml);
 
-        alert("REFRESH")
-        var response = apicall('GET');
-        console.log("Response: " + response);
-        var responseJson = JSON.parse(response);
-        console.log("ResponseJSON PID: " + responseJson.childprocessID);
-        console.log("ResponseJSON netstatcount: " + responseJson.netstatcount);
-        var varhtmlrefresh = "PID: " + responseJson.childprocessID + '<br>';
-        varhtmlrefresh += "NetstatCount: " + responseJson.netstatcount + '<br>';
-        //varhtmlrefresh += "<input type=\"submit\" id=\"refresh\" value=\"Refresh\"/><br>";
-        varhtmlrefresh += "<button type=\"button\" id=\"refresh\" onclick=\"refresh()\">Refresh</button>"
-        $('#divRefresh').html(varhtmlrefresh);
     });
-    */
 
-    function refresh() {
-        //alert("REFRESH")
-        var response = apicall('GET');
-        console.log("Response: " + response);
-        var responseJson = JSON.parse(response);
-        console.log("ResponseJSON PID: " + responseJson.childprocessID);
-        console.log("ResponseJSON netstatcount: " + responseJson.netstatcount);
-        console.log("ResponseJSON serverdate: " + responseJson.serverdate);
-        var varhtmlrefresh = "PID: " + responseJson.childprocessID + '<br>';
-        varhtmlrefresh += "NetstatCount: " + responseJson.netstatcount + '<br>';
-        varhtmlrefresh += "Server Date: " + responseJson.serverdate + '<br>';
-        //varhtmlrefresh += "<input type=\"submit\" id=\"refresh\" value=\"Refresh\"/><br>";
-        varhtmlrefresh += "<button type=\"button\" id=\"refresh\" onclick=\"refresh()\">Refresh</button>"
-        $('#divRefresh').html(varhtmlrefresh);
-    }
+    $('#Reconnect').click(function (e) {
+        e.preventDefault();
+        var rReconnect = apicall('GET', '', '/api/Socket/ReconnectSocket');
+        console.log("rReconnect: " + rReconnect);
+        var varhtml = genHTML(rReconnect);
+        $('#divRefresh').html(varhtml);
 
+    });
 </script>

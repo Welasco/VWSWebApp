@@ -161,6 +161,7 @@ namespace VWSWebApp.Tools
             socketstatus.ConnectionStatus = (sConnected > 0) ? SocketConnectionStatus.Connected : SocketConnectionStatus.Disconnected;
             socketstatus.OpenSockets = sConnected;
             socketstatus.ClosedSockets = sDisconnected;
+            socketstatus.ServerDateTime = DateTime.Now;
 
             //return "Connected Sockets: " + sConnected + " Disconnected Sockets: " + sDisconnected;
             return socketstatus;

@@ -23,6 +23,7 @@ namespace VWSWebApp.Models
         public int ClosedSockets { get; set; }
 
         public string ConnectionStatus {get; set;}
+        public DateTime ServerDateTime { get; set; }
 
     }
 }

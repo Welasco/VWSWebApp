@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <sitemanifest>
-  <IisApp path="C:\VSProjects2017\VWSWebApp\VWSWebApp\obj\Debug\Package\PackageTmp" />
-  <setAcl path="C:\VSProjects2017\VWSWebApp\VWSWebApp\obj\Debug\Package\PackageTmp" setAclResourceType="Directory" />
-  <setAcl path="C:\VSProjects2017\VWSWebApp\VWSWebApp\obj\Debug\Package\PackageTmp" setAclUser="anonymousAuthenticationUser" setAclResourceType="Directory" />
+  <IisApp path="C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\Package\PackageTmp" />
+  <setAcl path="C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\Package\PackageTmp" setAclResourceType="Directory" />
+  <setAcl path="C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\Package\PackageTmp" setAclUser="anonymousAuthenticationUser" setAclResourceType="Directory" />
 </sitemanifest>

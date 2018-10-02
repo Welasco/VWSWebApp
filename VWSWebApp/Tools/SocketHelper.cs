@@ -18,6 +18,7 @@ namespace VWSWebApp.Tools
             sStatus.ClosedSockets = 0;
             sStatus.OpenSockets = 0;
             sStatus.ConnectionStatus = SocketConnectionStatus.Disconnected;
+            sStatus.ServerDateTime = DateTime.Now;
 
             var socketstatus = JsonConvert.SerializeObject(sStatus, Formatting.Indented);
             response.Content = new StringContent(socketstatus, System.Text.Encoding.UTF8, "application/json");

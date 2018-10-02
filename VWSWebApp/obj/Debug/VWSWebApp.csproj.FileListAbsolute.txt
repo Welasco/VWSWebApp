@@ -187,8 +187,7 @@ C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\bin\Microsoft.AI.DependencyColle
 C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\bin\Microsoft.AI.WindowsServer.xml
 C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\bin\Microsoft.AI.Web.xml
 C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.csprojAssemblyReference.cache
 C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.csproj.CoreCompileInputs.cache
-C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.csproj.CopyComplete
 C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.dll
 C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.pdb
+C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.csprojResolveAssemblyReference.cache
