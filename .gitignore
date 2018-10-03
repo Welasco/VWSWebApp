@@ -261,6 +261,3 @@ __pycache__/
 *.pyc
 
 # Customer Files
-VWSWebApp/Controllers/SessionController.cs
-VWSWebApp/Controllers/Session2Controller.cs
-VWSWebApp/Controllers/Session3Controller.cs
