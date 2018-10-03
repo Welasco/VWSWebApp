@@ -159,9 +159,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\Session2Controller.cs" />
-    <Compile Include="Controllers\Session3Controller.cs" />
-    <Compile Include="Controllers\SessionController.cs" />
     <Compile Include="Controllers\SocketController.cs" />
     <Compile Include="Controllers\SocketStartController.cs" />
     <Compile Include="Controllers\SocketStopController.cs" />
