@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 
 # Customer Files
+VWSWebApp/Controllers/Session2Controller.cs
