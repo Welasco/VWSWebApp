@@ -19,6 +19,10 @@
             <input type="submit" id="run" value="Run" class="btn btn-primary btn-default" />
             <input type="submit" id="GetStatus" value="Status" class="btn btn-primary btn-default" />
             <input type="submit" id="Reconnect" value="Reconnect" class="btn btn-primary btn-default" />
+            <br><br>
+            <input type="submit" id="runasync" value="RunAsync" class="btn btn-primary btn-default" />
+            <input type="submit" id="GetStatusAsync" value="StatusAsync" class="btn btn-primary btn-default" />
+            <input type="submit" id="ReconnectAsync" value="ReconnectAsync" class="btn btn-primary btn-default" />
             </div>
     </div>
 </form>
@@ -49,17 +53,50 @@
                 async: false,
                 contentType: 'application/json',
                 url: apiurl,
-                
+
                 success: function (res) {
                     console.log("DataGet: " + res.responseText);
 
                     response = res;
                 },
-                error: function () { alert("Error!"); }
-                
+                error: function (res) { alert("Error: " + res.responseText); }
+
             });
             //console.log("POST Response: " + response.responseText);
             return response.responseText;
+        }
+    }
+
+    function apicallasync(type, data, apiurl, callback) {
+        var response = null;
+        var currentURL = window.location.hostname + ":" + window.location.port;
+        var protocol = location.protocol;
+        var apiurl = protocol + "//" + currentURL + apiurl;
+
+        if (type == 'GET') {
+            $.ajax({
+                type: 'GET',
+                //async: false,
+                contentType: 'application/json',
+                url: apiurl,
+                success: callback,
+                error: function (res) { alert("Error: " + res); }
+            });
+            //console.log("Aresult: " + response.responseText);
+        }
+        if (type == 'POST') {
+            response = $.ajax({
+                type: 'POST',
+                data: JSON.stringify(data),
+                //async: false,
+                contentType: 'application/json',
+                url: apiurl,
+
+                success: callback,
+                error: function (res) { alert("Error: " + res); }
+
+            });
+            //console.log("POST Response: " + response.responseText);
         }
     }
 
@@ -77,12 +114,11 @@
         return varhtml;
     }
 
-
-
     var currentStatus = apicall('GET', '', '/api/Socket');
     var currentStatusJSON = jsonParse(currentStatus);
     if (currentStatusJSON.ConnectionStatus == "Connected" || currentStatusJSON.ClosedSockets > 0) {
         $("#run").val('Stop');
+        $("#runasync").val('StopAsync');
         var varhtml = genHTML(currentStatus);
         $('#divRefresh').html(varhtml);
     }
@@ -127,4 +163,52 @@
         $('#divRefresh').html(varhtml);
 
     });
+
+    /////////////////////
+    // Async Operations
+    /////////////////////
+    function loadingimage() {
+        var loading = '<img src="/Content/Images/load.gif" />'
+        $('#divRefresh').html(loading);
+    }
+
+    function ajaxcallback(result) {
+        console.log("Reached AjaxCallBack");
+        console.log(JSON.stringify(result));
+        var varhtml = genHTML(JSON.stringify(result));
+        $('#divRefresh').html(varhtml);
+    }
+
+    $('#runasync').click(function (e) {
+        e.preventDefault();
+        var data = {};
+        data.Host = $('#target').val();
+        data.Port = $("#port").val();
+        data.Connections = $("#connections").val();
+        data.status = $("#runasync").val();
+
+        if (data.status == 'RunAsync') {
+            $("#runasync").val('StopAsync');
+            loadingimage();
+            apicallasync('POST', data, '/api/Socket/Start', ajaxcallback);
+        }
+        else if (data.status == 'StopAsync') {
+            $("#runasync").val('RunAsync');
+            //var rStop = apicall('GET', '', '/api/Socket/Stop');
+            apicallasync('GET', data, '/api/Socket/Stop', ajaxcallback);
+        }
+    });
+
+    $('#GetStatusAsync').click(function (e) {
+        e.preventDefault();
+        loadingimage();
+        apicallasync('GET', '', '/api/Socket', ajaxcallback);
+    });
+
+    $('#ReconnectAsync').click(function (e) {
+        e.preventDefault();
+        loadingimage();
+        apicallasync('GET', '', '/api/Socket/ReconnectSocket', ajaxcallback);
+    });
+
 </script>
