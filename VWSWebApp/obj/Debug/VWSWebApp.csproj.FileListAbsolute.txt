@@ -190,4 +190,5 @@ C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\bin\Microsoft.CodeDom.Providers.
 C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.csproj.CoreCompileInputs.cache
 C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.dll
 C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.pdb
-C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.csprojResolveAssemblyReference.cache
+C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.csprojAssemblyReference.cache
+C:\Projects\VSProjects-2017\VWSWebApp\VWSWebApp\obj\Debug\VWSWebApp.csproj.CopyComplete
