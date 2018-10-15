@@ -214,7 +214,7 @@ namespace VWSWebApp.Controllers
             }
             catch (Exception e)
             {
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, "Exception: " + e.Message);
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError, "Exception: " + e.Message);
                 return response;
             }
             return response;

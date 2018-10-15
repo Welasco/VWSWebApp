@@ -159,6 +159,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\Forcedump2Controller.cs" />
+    <Compile Include="Controllers\ForcedumpController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Session3Controller.cs" />
     <Compile Include="Controllers\SessionController.cs" />
@@ -192,7 +194,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Properties\PublishProfiles\VWSWebAppSNAT - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\webapp510 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />

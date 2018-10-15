@@ -80,7 +80,7 @@
                 contentType: 'application/json',
                 url: apiurl,
                 success: callback,
-                error: function (res) { alert("Error: " + res); }
+                error: function (res) { debugger; alert("Error: " + res.responseText); }
             });
             //console.log("Aresult: " + response.responseText);
         }
@@ -93,7 +93,7 @@
                 url: apiurl,
 
                 success: callback,
-                error: function (res) { alert("Error: " + res); }
+                error: function (res) { debugger; alert("Error: " + res.responseText); }
 
             });
             //console.log("POST Response: " + response.responseText);

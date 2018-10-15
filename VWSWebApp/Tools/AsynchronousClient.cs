@@ -133,11 +133,19 @@ namespace VWSWebApp.Tools
 
         public static void StopClient(List<Socket> sockets)
         {
-            foreach (var socket in sockets)
+            try
             {
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
+                foreach (var socket in sockets)
+                {
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close();
+                }
             }
+            catch (Exception)
+            {
+                GlobalVariables.GlobalSocketList = new List<Socket>();
+            }
+
         }
 
         public static Socketstatus StatusClient(List<Socket> sockets)
@@ -148,7 +156,18 @@ namespace VWSWebApp.Tools
             int sDisconnected = 0;
             foreach (var socket in sockets)
             {
-                if (IsSocketConnected(socket))
+                bool issocketconnected;
+                try
+                {
+                    issocketconnected = IsSocketConnected(socket);
+                }
+                catch
+                {
+                    issocketconnected = false;
+                }
+                
+
+                if (issocketconnected)
                 {
                     sConnected++;
                 }
